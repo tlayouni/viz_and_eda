@@ -6,3 +6,92 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+```{r}
+library(tidyverse)
+library(ggridges)
+```
+
+## create the weather data 
+
+```{r load_data, cache = TRUE}
+weather_df = 
+  rnoaa::meteo_pull_monitors(c("USW00094728", "USC00519397", "USS0023B17S"),
+                      var = c("PRCP", "TMIN", "TMAX"), 
+                      date_min = "2017-01-01",
+                      date_max = "2017-12-31") %>%
+  mutate(
+    name = recode(id, USW00094728 = "CentralPark_NY", 
+                      USC00519397 = "Waikiki_HA",
+                      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) %>%
+  select(name, id, everything())
+```
+
+## create a ggplot
+
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point()
+```
+
+alternate way of amking this plot 
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point()
+```
+
+saving initial plots: this is not used most of the time 
+
+```{r}
+scatterplot =     #creating a plot to save called scatterplot
+  weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point()
+
+scatterplot       #show plot
+```
+
+
+adding color...
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point(aes(color = name), alpha = .4)
+```
+
+why does 'aes' position matter? 
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point(aes(color = name), alpha = .4) + 
+  geom_smooth(se = FALSE)       #se = false takes away the error around line
+```
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(aes(alpha = .4)) + 
+  geom_smooth(se = FALSE)
+```
+
+color applied in ggplot aes= will apply the color to everything that follows where as if it is applie in a later step it is only applied o that part (like geom_point it will only apply to the points not the line in geom smooth)
+
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(aes(alpha = .4)) + 
+  geom_smooth(se = FALSE) +
+  facet_grid(~name) #this creates a plot for each category of the variable "name"
+```
+
+
+
+
+
