@@ -86,10 +86,86 @@ color applied in ggplot aes= will apply the color to everything that follows whe
 ```{r}
 weather_df %>% 
   ggplot(aes(x = tmin, y = tmax, color = name)) +
-  geom_point(aes(alpha = .4)) + 
+  geom_point(aes(alpha = .4)) + #alpha creates a more transparent point
   geom_smooth(se = FALSE) +
   facet_grid(~name) #this creates a plot for each category of the variable "name"
 ```
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = date, y = tmax, color = name)) + 
+  geom_point() +
+  geom_smooth(se = FALSE)
+```
+
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = date, y = tmax, color = name)) + 
+  geom_point(aes(size = prcp), alpha = .35) + # size makes point relative to amount of precipitation
+  geom_smooth(size = 2, se = FALSE) #size in smooth vommmsnf line refers to width of line? 
+```
+
+## some extra stuff 
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = date, y = tmax, color = name)) + 
+  geom_smooth(size = 2, se = FALSE) # no geom_point creates just smooth curve- dont do this 
+```
+
+2d density 
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_bin2d()
+```
+
+## more kinds of plots
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmax, fill = name)) +
+  geom_histogram() + #(position = "dodge") will dictate how to overlap the data for different places 
+  facet_grid(~name)
+
+```
+
+density plots 
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmax, fill = name)) +
+  geom_density(alpha = .3)
+```
+
+box plots 
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = name, y = tmax)) + 
+  geom_boxplot()
+```
+
+violin plot 
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = name, y = tmax)) + 
+  geom_violin() #only good thing: can see bimodality and you cant in a boxplot 
+```
+
+ridge plots 
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmax, y = name)) + 
+  geom_density_ridges() #can see bimodality 
+```
+
+
+
 
 
 
