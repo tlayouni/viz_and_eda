@@ -1,0 +1,151 @@
+---
+title: "ggplot2"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(ggridges)
+```
+
+## create the weather data 
+
+```{r load_data, cache = TRUE} 
+#cacheing will prevent loading from the server each time- saves to directory 
+weather_df = 
+  rnoaa::meteo_pull_monitors(c("USW00094728", "USC00519397", "USS0023B17S"),
+                      var = c("PRCP", "TMIN", "TMAX"), 
+                      date_min = "2017-01-01",
+                      date_max = "2017-12-31") %>%
+  mutate(
+    name = recode(id, USW00094728 = "CentralPark_NY", 
+                      USC00519397 = "Waikiki_HA",
+                      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) %>%
+  select(name, id, everything())
+```
+
+start with an old plot 
+
+```{r}
+
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5)
+```
+
+adding labels 
+
+```{r labeled_plot}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) +
+  labs(
+    title = "Temperature Plot",
+    x = "Minimum Temp (C)",
+    y = "Maximum Temp (C)",
+    caption = "Data from NOAA bia rnoaa package"
+  )
+```
+
+x axis tick marks etc. 
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) +
+  labs(
+    title = "Temperature Plot",
+    x = "Minimum Temp (C)",
+    y = "Maximum Temp (C)",
+    caption = "Data from NOAA bia rnoaa package"
+  ) + 
+  scale_x_continuous(
+    breaks = c(-15, -5, 20),
+    labels = c("-15C", "-5 still too cold", "20")
+  )
+```
+
+scale options 
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) +
+  labs(
+    title = "Temperature Plot",
+    x = "Minimum Temp (C)",
+    y = "Maximum Temp (C)",
+    caption = "Data from NOAA bia rnoaa package"
+  ) + 
+  scale_x_continuous(
+    breaks = c(-15, -5, 20),
+    labels = c("-15C", "-5 still too cold", "20")
+  ) + 
+  scale_y_continuous( 
+    trans = "sqrt"  #transforming 
+  )
+```
+
+colors! 
+
+```{r}
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) +
+  labs(
+    title = "Temperature Plot",
+    x = "Minimum Temp (C)",
+    y = "Maximum Temp (C)",
+    caption = "Data from NOAA bia rnoaa package"
+  ) + 
+  scale_color_hue(
+    name = "Weather Station", #giving legend a more descriptive title 
+    h = c(50, 200)
+  )
+```
+
+```{r}
+ggp_base = 
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) +
+  labs(
+    title = "Temperature Plot",
+    x = "Minimum Temp (C)",
+    y = "Maximum Temp (C)",
+    caption = "Data from NOAA bia rnoaa package"
+  ) + 
+  viridis::scale_color_viridis(
+    name = "Location", 
+    discrete = TRUE
+  )
+
+ggp_base
+```
+
+
+### Themes
+
+* theme: order matters!
+
+```{r}
+ggp_base +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+Setting options - check class notes 
+
+
+
+
+
+
+
+
